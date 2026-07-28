@@ -149,35 +149,34 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-function renderMiniPrints() {
+    function renderMiniPrints() {
         if (!printsRow) return;
         
-        // Remove apenas as imagens antigas, mantendo o botão de adicionar intacto
+        // Remove rigorosamente todas as miniaturas existentes antes de recriar
         const imagensAntigas = printsRow.querySelectorAll('.mini-print-img');
         imagensAntigas.forEach(img => img.remove());
 
-        // Adiciona cada print usando rigorosamente o link correspondente do array
+        // Reconstrói as miniaturas com base exata no array atualizado
         currentPrints.forEach((url, index) => {
             const img = document.createElement('img');
             img.className = 'mini-print-img';
-            img.title = 'Clique para remover este print'; // Dica ao passar o mouse
+            img.title = 'Clique para remover este print';
             
-            // Garante que o tratamento de erro roda antes de carregar o src
+            // Tratamento de erro caso o link falhe
             img.onerror = () => {
                 img.src = 'brasao.png';
             };
             
             img.src = url;
             
-            // Adiciona a ação de apagar ao clicar na miniatura
+            // Evento limpo e direto para remoção via índice correspondente
             img.addEventListener('click', () => {
                 if (confirm('🗑️ Deseja remover este print da lista?')) {
-                    currentPrints.splice(index, 1); // Remove do array
-                    renderMiniPrints(); // Atualiza a tela
+                    currentPrints.splice(index, 1);
+                    renderMiniPrints();
                 }
             });
             
-            // Insere a miniatura antes do botão de adicionar (+)
             printsRow.insertBefore(img, btnAddPrint);
         });
     }
@@ -400,7 +399,6 @@ async function dispararAcao(tipo) {
     const nick = loggedNickElem ? loggedNickElem.innerText : 'Crebes';
     const motivoAtual = motivoSelecionado ? motivoSelecionado.innerText : 'Geral';
 
-    // Ajustado para usar nick_habbo para bater com a tabela profiles
     const { error } = await supabaseClient
         .from('ponto_logs')
         .insert([
@@ -755,7 +753,6 @@ async function carregarLogsDoSupabase() {
 
     if (logs && logs.length > 0) {
         logs.forEach(log => {
-            // Suporta tanto nick_habbo quanto nick para compatibilidade total
             const nickUsado = log.nick_habbo || log.nick || log.usuario || 'Desconhecido';
             renderizarLinhaLog(log.tipo, nickUsado, log.created_at || log.data_hora, log.motivo);
         });
