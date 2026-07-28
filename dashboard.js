@@ -149,7 +149,7 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
- function renderMiniPrints() {
+function renderMiniPrints() {
         if (!printsRow) return;
         
         // Remove apenas as imagens antigas, mantendo o botão de adicionar intacto
@@ -159,13 +159,14 @@ document.addEventListener('DOMContentLoaded', () => {
         // Adiciona cada print usando rigorosamente o link correspondente do array
         currentPrints.forEach(url => {
             const img = document.createElement('img');
-            img.src = url;
             img.className = 'mini-print-img';
             
-            // Tratamento de erro limpo: se o link falhar, mostra o brasão apenas para aquela miniatura específica
+            // Garante que o tratamento de erro roda antes de carregar o src
             img.onerror = () => {
                 img.src = 'brasao.png';
             };
+            
+            img.src = url;
             
             // Insere a miniatura antes do botão de adicionar (+)
             printsRow.insertBefore(img, btnAddPrint);
