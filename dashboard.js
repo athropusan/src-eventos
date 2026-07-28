@@ -149,7 +149,7 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    function renderMiniPrints() {
+function renderMiniPrints() {
         if (!printsRow) return;
         
         // Remove rigorosamente todas as miniaturas existentes antes de recriar
@@ -161,12 +161,13 @@ document.addEventListener('DOMContentLoaded', () => {
             const img = document.createElement('img');
             img.className = 'mini-print-img';
             img.title = 'Clique para remover este print';
-            
+            img.referrerPolicy = "no-referrer"; // 👈 Essencial para burlar o bloqueio do Imgur
+    
             // Tratamento de erro caso o link falhe
             img.onerror = () => {
                 img.src = 'brasao.png';
             };
-            
+    
             img.src = url;
             
             // Evento limpo e direto para remoção via índice correspondente
@@ -181,19 +182,22 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    function atualizarFotoViewer() {
+ function atualizarFotoViewer() {
         if (!fullViewerImg || !printCounter) return;
+        
+        // Garante que o visualizador grande também burla o bloqueio do Imgur
+        fullViewerImg.referrerPolicy = "no-referrer";
+
         if (activeViewerPrints.length === 0) {
             fullViewerImg.src = 'brasao.png';
             printCounter.innerText = '0 / 0';
-            return;
+            return; // Aqui o return encerra corretamente, pois já aplicamos a regra acima
         }
 
         fullViewerImg.src = activeViewerPrints[currentViewerIndex];
         fullViewerImg.onerror = () => fullViewerImg.src = 'brasao.png';
         printCounter.innerText = `${currentViewerIndex + 1} / ${activeViewerPrints.length}`;
     }
-
     if (btnPrevPrint) {
         btnPrevPrint.addEventListener('click', (e) => {
             e.stopPropagation();
@@ -290,11 +294,14 @@ document.addEventListener('DOMContentLoaded', () => {
                 return;
             }
 
-            const capaUrl = currentPrints.length > 0 ? currentPrints[0] : 'brasao.png';
+        const capaUrl = currentPrints.length > 0 ? currentPrints[0] : 'brasao.png';
 
             if (selectedEventCard) {
                 selectedEventCard.querySelector('.event-card-title').innerText = titulo;
-                selectedEventCard.querySelector('img').src = capaUrl;
+                
+                const imgCapa = selectedEventCard.querySelector('img');
+                imgCapa.referrerPolicy = "no-referrer"; // 👈 Adicionado aqui para a capa do card
+                imgCapa.src = capaUrl;
                 
                 selectedEventCard.dataset.title = titulo;
                 selectedEventCard.dataset.desc = eventDescInput ? eventDescInput.value : '';
@@ -304,7 +311,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
                 alert('✅ Evento alterado com sucesso!');
             } else {
-                const newCard = document.createElement('div');
+               const newCard = document.createElement('div');
                 newCard.className = 'event-card';
                 newCard.dataset.title = titulo;
                 newCard.dataset.desc = eventDescInput ? eventDescInput.value : '';
@@ -314,7 +321,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
                 newCard.innerHTML = `
                     <div class="event-thumb">
-                        <img src="${capaUrl}" alt="Capa Evento" onError="this.src='brasao.png'">
+                        <img src="${capaUrl}" referrerpolicy="no-referrer" alt="Capa Evento" onError="this.src='brasao.png'">
                     </div>
                     <span class="event-card-title">${titulo}</span>
                 `;
