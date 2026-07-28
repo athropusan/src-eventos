@@ -149,17 +149,27 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    function renderMiniPrints() {
+ function renderMiniPrints() {
         if (!printsRow) return;
-        printsRow.innerHTML = '';
+        
+        // Remove apenas as imagens antigas, mantendo o botão de adicionar intacto
+        const imagensAntigas = printsRow.querySelectorAll('.mini-print-img');
+        imagensAntigas.forEach(img => img.remove());
+
+        // Adiciona cada print usando rigorosamente o link correspondente do array
         currentPrints.forEach(url => {
             const img = document.createElement('img');
             img.src = url;
             img.className = 'mini-print-img';
-            img.onerror = () => img.src = 'brasao.png';
-            printsRow.appendChild(img);
+            
+            // Tratamento de erro limpo: se o link falhar, mostra o brasão apenas para aquela miniatura específica
+            img.onerror = () => {
+                img.src = 'brasao.png';
+            };
+            
+            // Insere a miniatura antes do botão de adicionar (+)
+            printsRow.insertBefore(img, btnAddPrint);
         });
-        if (btnAddPrint) printsRow.appendChild(btnAddPrint);
     }
 
     function atualizarFotoViewer() {
