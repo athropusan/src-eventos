@@ -158,46 +158,40 @@ function renderMiniPrints() {
 
         // Reconstrói as miniaturas com base exata no array atualizado
         currentPrints.forEach((url, index) => {
-            const img = document.createElement('img');
-            img.className = 'mini-print-img';
-            img.title = 'Clique para remover este print';
-            img.referrerPolicy = "no-referrer"; // 👈 Essencial para burlar o bloqueio do Imgur
+    const img = document.createElement('img');
+    img.className = 'mini-print-img';
+    img.title = 'Clique para remover este print';
     
-            // Tratamento de erro caso o link falhe
-            img.onerror = () => {
-                img.src = 'brasao.png';
-            };
+    img.onerror = () => {
+        img.src = 'brasao.png';
+    };
     
-            img.src = url;
-            
-            // Evento limpo e direto para remoção via índice correspondente
-            img.addEventListener('click', () => {
-                if (confirm('🗑️ Deseja remover este print da lista?')) {
-                    currentPrints.splice(index, 1);
-                    renderMiniPrints();
-                }
-            });
-            
-            printsRow.insertBefore(img, btnAddPrint);
-        });
-    }
+    // Passa a URL pelo proxy
+    img.src = formatarUrlImagem(url);
+    
+    img.addEventListener('click', () => {
+        if (confirm('🗑️ Deseja remover este print da lista?')) {
+            currentPrints.splice(index, 1);
+            renderMiniPrints();
+        }
+    });
+    
+    printsRow.insertBefore(img, btnAddPrint);
+});
 
  function atualizarFotoViewer() {
-        if (!fullViewerImg || !printCounter) return;
-        
-        // Garante que o visualizador grande também burla o bloqueio do Imgur
-        fullViewerImg.referrerPolicy = "no-referrer";
-
-        if (activeViewerPrints.length === 0) {
-            fullViewerImg.src = 'brasao.png';
-            printCounter.innerText = '0 / 0';
-            return; // Aqui o return encerra corretamente, pois já aplicamos a regra acima
-        }
-
-        fullViewerImg.src = activeViewerPrints[currentViewerIndex];
-        fullViewerImg.onerror = () => fullViewerImg.src = 'brasao.png';
-        printCounter.innerText = `${currentViewerIndex + 1} / ${activeViewerPrints.length}`;
+    if (!fullViewerImg || !printCounter) return;
+    if (activeViewerPrints.length === 0) {
+        fullViewerImg.src = 'brasao.png';
+        printCounter.innerText = '0 / 0';
+        return;
     }
+
+    // Passa a URL atual pelo proxy
+    fullViewerImg.src = formatarUrlImagem(activeViewerPrints[currentViewerIndex]);
+    fullViewerImg.onerror = () => fullViewerImg.src = 'brasao.png';
+    printCounter.innerText = `${currentViewerIndex + 1} / ${activeViewerPrints.length}`;
+}
     if (btnPrevPrint) {
         btnPrevPrint.addEventListener('click', (e) => {
             e.stopPropagation();
@@ -294,14 +288,12 @@ function renderMiniPrints() {
                 return;
             }
 
-        const capaUrl = currentPrints.length > 0 ? currentPrints[0] : 'brasao.png';
+ const capaUrl = currentPrints.length > 0 ? currentPrints[0] : 'brasao.png';
+const capaFormatada = formatarUrlImagem(capaUrl);
 
-            if (selectedEventCard) {
-                selectedEventCard.querySelector('.event-card-title').innerText = titulo;
-                
-                const imgCapa = selectedEventCard.querySelector('img');
-                imgCapa.referrerPolicy = "no-referrer"; // 👈 Adicionado aqui para a capa do card
-                imgCapa.src = capaUrl;
+if (selectedEventCard) {
+    selectedEventCard.querySelector('.event-card-title').innerText = titulo;
+    selectedEventCard.querySelector('img').src = capaFormatada;
                 
                 selectedEventCard.dataset.title = titulo;
                 selectedEventCard.dataset.desc = eventDescInput ? eventDescInput.value : '';
@@ -310,9 +302,9 @@ function renderMiniPrints() {
                 selectedEventCard.dataset.prints = JSON.stringify(currentPrints);
 
                 alert('✅ Evento alterado com sucesso!');
-            } else {
-               const newCard = document.createElement('div');
-                newCard.className = 'event-card';
+           } else {
+    const newCard = document.createElement('div');
+    newCard.className = 'event-card';
                 newCard.dataset.title = titulo;
                 newCard.dataset.desc = eventDescInput ? eventDescInput.value : '';
                 newCard.dataset.part = eventPartInput ? eventPartInput.value : '';
@@ -320,11 +312,11 @@ function renderMiniPrints() {
                 newCard.dataset.prints = JSON.stringify(currentPrints);
 
                 newCard.innerHTML = `
-                    <div class="event-thumb">
-                        <img src="${capaUrl}" referrerpolicy="no-referrer" alt="Capa Evento" onError="this.src='brasao.png'">
-                    </div>
-                    <span class="event-card-title">${titulo}</span>
-                `;
+        <div class="event-thumb">
+            <img src="${capaFormatada}" alt="Capa Evento" onError="this.src='brasao.png'">
+        </div>
+        <span class="event-card-title">${titulo}</span>
+    `;
 
                 vincularCliqueCard(newCard);
                 if (eventsGallery) eventsGallery.appendChild(newCard);
