@@ -1,0 +1,400 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SRC - Painel de Eventos</title>
+    <link rel="stylesheet" href="estilo.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body class="dashboard-body">
+
+    <div class="dashboard-container">
+        
+        <!-- Topbar -->
+        <header class="topbar">
+            <div class="topbar-brand">
+                <img src="brasao.png" alt="Brasão SRC" class="topbar-logo">
+                <span>SRC - <strong class="text-pink">EVENTOS</strong></span>
+            </div>
+
+            <div class="topbar-user">
+                <div class="user-avatar">
+                    <img id="dashAvatar" src="https://www.habbo.com.br/habbo-imaging/avatarimage?user=Crebes&headonly=1&direction=2&head_direction=2&gesture=sml&size=m" alt="Avatar">
+                </div>
+                <div class="user-info">
+                    <span class="user-name" id="loggedNick">Crebes</span>
+                    <span class="user-role" id="currentRole">Líder</span>
+                </div>
+                <a href="index.html" class="btn-logout">Sair</a>
+            </div>
+        </header>
+
+        <!-- Layout SPA -->
+        <main class="sketch-layout">
+            
+            <!-- Coluna Esquerda: Navegação e Membros -->
+<aside class="left-sidebar">
+    <div class="nav-section">
+        <button class="nav-btn" data-target="view-eventos">EVENTOS</button>
+        <button class="nav-btn active" data-target="view-registros">REGÍSTROS</button>
+        <button class="nav-btn" data-target="view-funcoes">FUNÇÕES</button>
+        <button class="nav-btn" data-target="admin-view" id="navAdminBtn" style="display: none;">
+            ⚙️ Painel Admin
+        </button>
+    </div>
+
+    <div class="members-section">
+        <span class="members-main-title">LISTA DE MEMBROS</span>
+
+        <div class="role-group">
+            <span class="role-title">LÍDER</span>
+            <div class="member-tags-row" id="sidebar-Lider"></div>
+        </div>
+
+        <div class="role-group">
+            <span class="role-title">VICE-LÍDERES</span>
+            <div class="member-tags-row" id="sidebar-Vice-Lider"></div>
+        </div>
+
+        <div class="role-group">
+            <span class="role-title">SECRETÁRIO</span>
+            <div class="member-tags-row" id="sidebar-Secretario"></div>
+        </div>
+
+        <div class="role-group">
+            <span class="role-title">ANALISTAS</span>
+            <div class="member-tags-row" id="sidebar-Analista"></div>
+        </div>
+    </div>
+</aside>
+
+            <!-- ABA 1: EVENTOS -->
+            <div class="tab-view" id="view-eventos">
+                <section class="center-content">
+                    <div class="center-header">
+                        <span class="panel-title">PAINEL DE EVENTOS</span>
+                        <button class="btn-close-viewer" id="btnCloseViewer" style="display: none;" title="Fechar e voltar à galeria">✕</button>
+                    </div>
+
+                    <div class="events-gallery" id="eventsGallery">
+                        <div class="event-card" data-title="Torneio de Construção" data-desc="Torneio oficial entre os construtores da SRC." data-part="Crebes, _brant, zZq" data-win="1º Crebes" data-prints='["https://i.imgur.com/8Q88yO4.png"]'>
+                            <div class="event-thumb">
+                                <img src="https://i.imgur.com/8Q88yO4.png" alt="Capa Evento" onError="this.src='brasao.png'">
+                            </div>
+                            <span class="event-card-title">Torneio de Construção</span>
+                        </div>
+                    </div>
+
+                    <div class="event-full-viewer" id="eventFullViewer" style="display: none;">
+                        <button class="nav-arrow arrow-left" id="btnPrevPrint">‹</button>
+                        <div class="viewer-img-wrapper">
+                            <img id="fullViewerImg" src="" alt="Print do Evento">
+                            <span class="print-counter" id="printCounter">1 / 1</span>
+                        </div>
+                        <button class="nav-arrow arrow-right" id="btnNextPrint">›</button>
+                    </div>
+                </section>
+
+                <aside class="right-sidebar">
+                    <div class="form-header">
+                        <span class="panel-title" id="eventFormTitle">CRIAR EVENTO</span>
+                    </div>
+
+                    <div class="event-form-container">
+                        <div class="form-group">
+                            <label class="form-label">TÍTULO DO EVENTO</label>
+                            <input type="text" id="eventTitleInput" class="form-input" placeholder="Digite o título...">
+                        </div>
+
+                        <div class="form-group">
+                            <label class="form-label">DESCRIÇÃO DO EVENTO</label>
+                            <textarea id="eventDescInput" class="form-textarea" placeholder="Breve resumo..."></textarea>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="form-label">PARTICIPANTES</label>
+                            <textarea id="eventPartInput" class="form-textarea mini-text" placeholder="Nicks..."></textarea>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="form-label">GANHADORES</label>
+                            <textarea id="eventWinInput" class="form-textarea mini-text" placeholder="Colocados..."></textarea>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="form-label">MINI-PRINTS DO EVENTO</label>
+                            <div class="prints-row" id="printsRow">
+                                <button type="button" class="btn-add-print" id="btnAddPrint">+</button>
+                            </div>
+                        </div>
+
+                        <div class="event-actions-row">
+                            <button class="btn-confirm-event" id="btnConfirmEvent">Confirmar</button>
+                            <button class="btn-cancel-event" id="btnCancelEvent">Cancelar</button>
+                        </div>
+                    </div>
+                </aside>
+            </div>
+
+            <!-- ABA 2: REGISTROS -->
+            <div class="tab-view active" id="view-registros">
+                <section class="center-content">
+                    <div class="center-header">
+                        <span class="panel-title">PAINEL DE REGISTROS DE PONTO & TAREFAS</span>
+                    </div>
+                    <div class="logs-container" id="logsContainer">
+                        <!-- O JavaScript vai carregar os registros do Supabase aqui dinamicamente -->
+                    </div>
+                </section>
+
+                <aside class="right-sidebar">
+                    <div class="action-toggle-row">
+                        <button class="toggle-btn btn-login-action" id="btnLogin">LOGIN</button>
+                        <button class="toggle-btn btn-logout-action" id="btnLogout">LOGOUT</button>
+                    </div>
+                     <div style="text-align: center; margin-top: 8px;">
+                       <small style="color: #a0a5c0; font-size: 0.75rem;">Clique em Login para liberar o email e a senha da conta.</small>
+                     </div>
+
+                    <div class="quick-inputs">
+                        <span class="section-subtitle">ACESSO CONSTRUTOR SRC</span>
+                        <div class="input-mini">
+                            <label>LOGIN</label>
+                            <input type="text" id="inputLogin" value="****" readonly>
+                        </div>
+                        <div class="input-mini">
+                            <label>SENHA</label>
+                            <input type="password" id="inputSenha" value="****" readonly>
+                        </div>
+                    </div>
+
+                    <div class="motivos-avatar-container">
+                        <img src="avatar.png" alt="Avatar Construtor SRC" class="motivos-avatar">
+                    </div>
+
+                    <div class="motivos-section">
+                        <span class="section-title">SELEÇÃO DE MOTIVOS</span>
+                        <div class="motivos-grid" id="motivosGrid"></div>
+                    </div>
+                </aside>
+            </div>
+
+            <!-- ABA 3: FUNÇÕES -->
+            <div class="tab-view" id="view-funcoes">
+                <section class="center-content">
+                    <div class="center-header">
+                        <span class="panel-title">PAINEL DE FUNÇÕES</span>
+                    </div>
+
+                    <div class="funcoes-container">
+                        <div class="card-funcao">
+                            <span class="funcao-titulo">POSTAGEM DE CONCLUSÃO</span>
+                            <div class="botoes-grupo">
+                                <a href="https://forms.gle/vZTQ1XWRQC23cjmp6" target="_blank" class="btn-acessar" onclick="manterAtivo10s(this)">Acessar</a>
+                                <button class="btn-saiba-como" onclick="abrirTutorial('Postagem de Conclusão')">SAIBA COMO FAZER</button>
+                            </div>
+                        </div>
+
+                        <div class="card-funcao">
+                            <span class="funcao-titulo">ESCALA INTERNA</span>
+                            <div class="botoes-grupo">
+                                <a href="https://docs.google.com/spreadsheets/d/1rvkkM46-gLlPhJIwfddlj38pyjUEAn8nq-C5FbF0Lj0/edit?usp=sharing" target="_blank" class="btn-acessar" onclick="manterAtivo10s(this)">Acessar</a>
+                                <button class="btn-saiba-como" onclick="abrirTutorial('Escala Interna')">SAIBA COMO FAZER</button>
+                            </div>
+                        </div>
+
+                        <div class="card-funcao">
+                            <span class="funcao-titulo">ESCALA - SRC</span>
+                            <div class="botoes-grupo">
+                                <a href="https://www.policiarcc.com/h366-src-escala" target="_blank" class="btn-acessar" onclick="manterAtivo10s(this)">Acessar</a>
+                                <button class="btn-saiba-como" onclick="abrirTutorial('Escala - SRC')">SAIBA COMO FAZER</button>
+                            </div>
+                        </div>
+
+                        <div class="card-funcao">
+                            <span class="funcao-titulo">CAIXA</span>
+                            <div class="botoes-grupo">
+                                <a href="https://www.policiarcc.com/h335-ins-central-src" target="_blank" class="btn-acessar" onclick="manterAtivo10s(this)">Acessar</a>
+                                <button class="btn-saiba-como" onclick="abrirTutorial('Caixa')">SAIBA COMO FAZER</button>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <aside class="right-sidebar">
+                    <div class="form-header">
+                        <span class="panel-title" id="titulo-tutorial">TUTORIAL DA FUNÇÃO</span>
+                    </div>
+                    <div id="conteudo-tutorial" class="tutorial-box">
+                        <p class="placeholder-dev">Selecione "SAIBA COMO FAZER" em qualquer item ao lado para carregar as instruções aqui.</p>
+                    </div>
+                </aside>
+            </div>
+
+            <!-- ABA 4: PAINEL ADMIN -->
+            <div id="admin-view" class="tab-view">
+                <div class="panel-box" style="width: 100%; max-width: 950px; margin: 0 auto;">
+                    <h2 class="text-pink" style="margin-bottom: 20px;">painel administrativo</h2>
+                    
+                    <div style="margin-bottom: 25px;">
+                        <h3 style="font-size: 1rem; color: #fff; margin-bottom: 10px;">👥 Gerenciar Membros e Aprovações</h3>
+                        <div style="overflow-x: auto;">
+                            <table style="width: 100%; border-collapse: collapse; text-align: left; font-size: 0.9rem;">
+                                <thead>
+                                    <tr style="border-bottom: 2px solid #322853; color: #a0a5c0;">
+                                        <th style="padding: 10px;">Nick Habbo</th>
+                                        <th style="padding: 10px;">E-mail</th>
+                                        <th style="padding: 10px;">Cargo Atual</th>
+                                        <th style="padding: 10px;">Status</th>
+                                        <th style="padding: 10px; text-align: center;">Ações</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="adminMembrosTable">
+                                    <!-- Preenchido via JavaScript dinamicamente -->
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                    <!-- Seção de Gerenciamento do Admin (Registros, Credenciais e Motivos) -->
+<div style="margin-top: 30px; background: #15102a; padding: 20px; border-radius: 8px; border: 1px solid #322853;">
+    <h3 style="color: #fff; font-size: 1rem; margin-bottom: 15px;">⚙️ Gerenciamento do Painel e Registros</h3>
+    
+    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
+        <!-- Limpar Registros -->
+        <div style="background: #1a153b; padding: 15px; border-radius: 6px; border: 1px solid #322853;">
+            <h4 style="color: #fff; font-size: 0.9rem; margin-bottom: 8px;">Limpar Registros de Ponto</h4>
+            <p style="color: #a0a5c0; font-size: 0.8rem; margin-bottom: 10px;">Apaga todo o histórico de pontos e tarefas armazenados.</p>
+            <button onclick="limparTodosRegistrosAdmin()" style="background: #ff4757; color: #fff; border: none; padding: 8px 12px; border-radius: 4px; cursor: pointer; font-size: 0.85rem; font-weight: 600;">🗑️ Limpar Todos os Registros</button>
+        </div>
+
+        <!-- Alterar Credenciais da Conta Construtor -->
+        <div style="background: #1a153b; padding: 15px; border-radius: 6px; border: 1px solid #322853;">
+            <h4 style="color: #fff; font-size: 0.9rem; margin-bottom: 8px;">Credenciais do Construtor SRC</h4>
+            <div style="display: flex; flex-direction: column; gap: 8px; margin-bottom: 10px;">
+                <input type="text" id="adminLoginConta" placeholder="Login / E-mail do jogo..." style="background: #120e29; border: 1px solid #322853; color: #fff; padding: 6px; border-radius: 4px; font-size: 0.8rem;">
+                <input type="text" id="adminSenhaConta" placeholder="Senha do jogo..." style="background: #120e29; border: 1px solid #322853; color: #fff; padding: 6px; border-radius: 4px; font-size: 0.8rem;">
+            </div>
+            <button onclick="salvarCredenciaisConta()" style="background: #2ed573; color: #fff; border: none; padding: 6px 12px; border-radius: 4px; cursor: pointer; font-size: 0.85rem; font-weight: 600;">Salvar Credenciais</button>
+        </div>
+    </div>
+
+    <!-- Gerenciar Motivos -->
+    <div style="margin-top: 20px; background: #1a153b; padding: 15px; border-radius: 6px; border: 1px solid #322853;">
+        <h4 style="color: #fff; font-size: 0.9rem; margin-bottom: 8px;">Gerenciar Motivos de Ponto</h4>
+        <div style="display: flex; gap: 10px; margin-bottom: 12px;">
+            <input type="text" id="novoMotivoInput" placeholder="Nome do novo motivo..." style="flex: 1; background: #120e29; border: 1px solid #322853; color: #fff; padding: 8px; border-radius: 4px; font-size: 0.85rem;">
+            <button onclick="adicionarMotivoAdmin()" style="background: #3498db; color: #fff; border: none; padding: 8px 15px; border-radius: 4px; cursor: pointer; font-size: 0.85rem; font-weight: 600;">Adicionar Motivo</button>
+        </div>
+        <div id="listaMotivosAdminContainer" style="display: flex; flex-direction: column; gap: 6px; max-height: 150px; overflow-y: auto;">
+            <!-- Carregado via JS -->
+        </div>
+    </div>
+</div>
+
+                    <!-- Seção de Gerenciamento de Funções no Painel Admin -->
+                    <div style="margin-top: 35px; border-top: 1px solid #322853; padding-top: 20px;">
+                        <h3 style="font-size: 1rem; color: #fff; margin-bottom: 15px;">🛠️ Gerenciar Links e Tutoriais de Funções</h3>
+                        <div id="adminFuncoesContainer" style="display: flex; flex-direction: column; gap: 20px;">
+                            <!-- Preenchido dinamicamente via JavaScript -->
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+
+        </main>
+
+        <div class="bottom-watermark">
+            <img src="brasao.png" alt="Brasão SRC" class="watermark-external">
+        </div>
+    </div>
+
+    <!-- MODAL -->
+    <div class="modal-overlay" id="imageModal">
+        <div class="modal-box">
+            <span class="modal-title">INSERIR MINI-PRINT (.PNG)</span>
+            <input type="text" id="modalImageUrl" class="form-input" placeholder="Cole o URL da imagem...">
+            <div class="modal-actions">
+                <button class="btn-modal-ok" id="btnModalOk">Adicionar</button>
+                <button class="btn-modal-cancel" id="btnModalCancel">Cancelar</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="footer-disclaimer">
+        <p>ESTE SITE NÃO POSSUI VÍNCULOS OU NÃO É OPERADO PELA SULAKE CORPORATION OY E NÃO FAZ PARTE DO HABBO HOTEL®.</p>
+        <p>PMRCC 2007 ~ 2026. TODOS OS DIREITOS RESERVADOS À POLÍCIA MILITAR REVOLUÇÃO CONTRA O CRIME.</p>
+        <p class="dev-tag">DESENVOLVIDO POR <strong>yycecedilha</strong>.</p>
+    </div>
+
+    <!-- CARREGAR O SUPABASE E OS SCRIPTS NA ORDEM CORRETA -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="supabase.js"></script>
+    <script src="dashboard.js"></script>
+
+    <!-- SCRIPT DE CARREGAMENTO DO USUÁRIO LOGADO E VERIFICAÇÃO DE ADMIN -->
+    <script>
+        document.addEventListener('DOMContentLoaded', async () => {
+            if (!supabaseClient) return;
+
+            try {
+                const { data: { session }, error: sessionError } = await supabaseClient.auth.getSession();
+                
+                if (sessionError || !session) {
+                    window.location.href = 'index.html';
+                    return;
+                }
+
+                const userId = session.user.id;
+
+                const { data: profile, error: profileError } = await supabaseClient
+                    .from('profiles')
+                    .select('nick_habbo, cargo, status')
+                    .eq('id', userId)
+                    .single();
+
+                if (profileError || !profile) return;
+
+                if (profile.status === 'pendente') {
+                    alert('⏳ Sua conta está pendente de aprovação.');
+                    await supabaseClient.auth.signOut();
+                    window.location.href = 'index.html';
+                    return;
+                }
+
+                const nickElem = document.getElementById('loggedNick');
+                const roleElem = document.getElementById('currentRole');
+                const avatarElem = document.getElementById('dashAvatar');
+
+                if (nickElem) nickElem.innerText = profile.nick_habbo;
+                if (roleElem) roleElem.innerText = profile.cargo;
+                if (avatarElem) {
+                    avatarElem.src = `https://www.habbo.com.br/habbo-imaging/avatarimage?user=${encodeURIComponent(profile.nick_habbo)}&headonly=1&direction=2&head_direction=2&gesture=sml&size=m`;
+                    avatarElem.onerror = () => { avatarElem.src = 'brasao.png'; };
+                }
+
+                // ==========================================================
+                // 🔒 SOMENTE O ADMIN VÊ E ACESSA O PAINEL DE TI
+                // ==========================================================
+                const navAdminBtn = document.getElementById('navAdminBtn');
+                if (profile.cargo === 'Admin') {
+                    if (navAdminBtn) navAdminBtn.style.display = 'block';
+                    
+                    if (typeof carregarMembrosAdmin === 'function') {
+                        carregarMembrosAdmin();
+                    }
+                    if (typeof carregarFuncoesAdmin === 'function') {
+                        carregarFuncoesAdmin();
+                    }
+                } else {
+                    if (navAdminBtn) navAdminBtn.style.display = 'none';
+                }
+
+            } catch (err) {
+                console.error("Erro ao carregar o dashboard:", err);
+            }
+        });
+    </script>
+</body>
+</html>

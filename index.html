@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SRC - Eventos | Login</title>
+    <!-- Fonte Poppins -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <!-- Arquivo de Estilo -->
+    <link rel="stylesheet" href="login.css">
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+</head>
+<body>
+
+    <!-- 1. Fundo Gradiente Animado -->
+    <div class="gradient-bg"></div>
+
+    <!-- 2. Imagem do Quarto Habbo com Blur -->
+    <div class="room-overlay"></div>
+
+    <!-- 3. Conteúdo Principal -->
+    <div class="main-container">
+        
+        <!-- Lado Esquerdo: Brasão Real SRC -->
+        <div class="crest-section">
+            <div class="crest-wrapper">
+                <div class="crest-glow"></div>
+               <img src="brasao.png" alt="Brasão SRC" class="crest-image">
+            </div>
+        </div>
+
+        <!-- Lado Direito: Painel de Login Flutuante -->
+        <div class="login-panel">
+            <div class="login-header">
+                <div class="avatar-box">
+                    <img id="habboAvatar" src="https://www.habbo.com.br/habbo-imaging/avatarimage?user=Crebes&action=wav&direction=2&head_direction=2&gesture=sml&size=m" alt="Avatar Habbo">
+                </div>
+                <div class="header-text">
+                    <h2>SRC - Eventos</h2>
+                    <p>Seja bem-vindo!</p>
+                </div>
+            </div>
+
+            <form id="loginForm">
+                <div class="form-group">
+                    <label for="username">Nome de usuário ou E-mail <span>*</span></label>
+                    <div class="input-wrapper">
+                        <input type="text" id="username" placeholder="Crebes ou seu e-mail" required autocomplete="off">
+                    </div>
+                </div>
+
+                <div class="form-group" style="margin-bottom: 20px;">
+                   <label for="password">Senha *</label>
+                   <div class="input-wrapper" style="position: relative;">
+                       <input type="password" id="password" placeholder="Sua senha" required>
+                       <button type="button" id="togglePassword" style="position: absolute; right: 12px; top: 50%; transform: translateY(-50%); background: none; border: none; cursor: pointer; color: #a0a5c0; font-size: 1rem;">👁️</button>
+                   </div>
+                </div>
+
+                <div class="options-row">
+                    <label class="remember-me">
+                        <input type="checkbox" id="remember">
+                        Manter conectado
+                    </label>
+                    <a href="#" class="forgot-pass" id="forgotPassBtn">Esqueceu a senha?</a>
+                </div>
+
+                <div class="actions-row">
+                <button type="submit" class="btn btn-primary">Entrar</button>
+                <button type="button" class="btn btn-secondary" id="registerBtn">Criar Conta</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- Modal de Criar Conta -->
+<div id="registerModal" class="modal-overlay">
+    <div class="modal-box">
+        <h3 class="modal-title text-pink">CRIAR NOVA CONTA</h3>
+        <form id="registerForm">
+            <div class="form-group" style="margin-bottom: 12px;">
+                <label for="regEmail">E-mail *</label>
+                <div class="input-wrapper">
+                    <input type="email" id="regEmail" placeholder="seu@email.com" required>
+                </div>
+            </div>
+            <div class="form-group" style="margin-bottom: 12px;">
+                <label for="regUser">Nick no Habbo *</label>
+                <div class="input-wrapper">
+                    <input type="text" id="regUser" placeholder="Seu Nick" required>
+                </div>
+            </div>
+            <div class="form-group" style="margin-bottom: 20px;">
+                <label for="regPassword">Senha *</label>
+                <div class="input-wrapper" style="position: relative;">
+                    <input type="password" id="regPassword" placeholder="Mínimo 6 caracteres" required>
+                    <button type="button" id="toggleRegPassword" style="position: absolute; right: 12px; top: 50%; transform: translateY(-50%); background: none; border: none; cursor: pointer; color: #a0a5c0; font-size: 1rem;">👁️</button>
+                </div>
+            </div>
+            <div class="modal-actions">
+                <button type="submit" class="btn-modal-ok">Cadastrar</button>
+                <button type="button" id="closeModalBtn" class="btn-modal-cancel">Cancelar</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- Rodapé de Autenticidade -->
+<div class="login-footer-disclaimer">
+    ESTE SITE NÃO POSSUI VÍNCULOS OU NÃO É OPERADO PELA SULAKE CORPORATION OY E NÃO FAZ PARTE DO HABBO HOTEL®.<br>
+    PMRCC 2007 ~ 2026. TODOS OS DIREITOS RESERVADOS À POLÍCIA MILITAR REVOLUÇÃO CONTRA O CRIME.<br>
+    DESENVOLVIDO POR <span class="text-pink">yycecedilha</span>.
+</div>
+
+<!-- Scripts da Página de Login -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="supabase.js"></script>
+    <script src="login.js"></script>
+</body>
+</html>
