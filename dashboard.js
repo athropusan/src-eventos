@@ -157,9 +157,10 @@ function renderMiniPrints() {
         imagensAntigas.forEach(img => img.remove());
 
         // Adiciona cada print usando rigorosamente o link correspondente do array
-        currentPrints.forEach(url => {
+        currentPrints.forEach((url, index) => {
             const img = document.createElement('img');
             img.className = 'mini-print-img';
+            img.title = 'Clique para remover este print'; // Dica ao passar o mouse
             
             // Garante que o tratamento de erro roda antes de carregar o src
             img.onerror = () => {
@@ -167,6 +168,14 @@ function renderMiniPrints() {
             };
             
             img.src = url;
+            
+            // Adiciona a ação de apagar ao clicar na miniatura
+            img.addEventListener('click', () => {
+                if (confirm('🗑️ Deseja remover este print da lista?')) {
+                    currentPrints.splice(index, 1); // Remove do array
+                    renderMiniPrints(); // Atualiza a tela
+                }
+            });
             
             // Insere a miniatura antes do botão de adicionar (+)
             printsRow.insertBefore(img, btnAddPrint);
