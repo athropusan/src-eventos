@@ -340,6 +340,27 @@ if (selectedEventCard) {
 // ==========================================================
 // FUNÇÕES GLOBAIS DO DASHBOARD
 // ==========================================================
+// Função que converte links bloqueados (como Imgur) usando um proxy gratuito
+function formatarUrlImagem(url) {
+    if (!url || url === 'brasao.png') return 'brasao.png';
+    
+    // Se o link for do Imgur, roteamos pelo proxy para burlar o 403
+    if (url.includes('imgur.com')) {
+        const urlLimpa = url.replace(/^https?:\/\//, '');
+        return `https://wsrv.nl/?url=${encodeURIComponent(urlLimpa)}&output=jpg`;
+    }
+    
+    return url;
+}
+
+function manterAtivo10s(elemento) {
+    elemento.classList.add('ativo-neon');
+    setTimeout(() => {
+        elemento.classList.remove('ativo-neon');
+    }, 10000);
+}
+
+function abrirTutorial(nomeFuncao) {
 function manterAtivo10s(elemento) {
     elemento.classList.add('ativo-neon');
     setTimeout(() => {
