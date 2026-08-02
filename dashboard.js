@@ -125,74 +125,76 @@ const btnAddPrint = document.getElementById('btnAddPrint');
 const eventSubmitRow = document.getElementById('eventSubmitRow');
 
 // =========================================================
-// 1. ABRIR E NAVEGAR NO EVENTO
+// 1. ABRIR E NAVEGAR NO EVENTO (CARREGANDO DO SUPABASE)
 // =========================================================
 
-// Função que simula o carregamento dos dados ao clicar no card de um evento
-// (Adapte essa parte de acordo com a sua função que puxa do Supabase)
-document.querySelectorAll('.event-card').forEach(card => {
-    card.addEventListener('click', (e) => {
-        // PEGANDO O ID DO BANCO (Importante que o card no HTML tenha data-id="")
-        idEventoAtual = card.getAttribute('data-id'); 
+async function carregarEventosDoSupabase() {
+    const eventsGallery = document.getElementById('eventsGallery');
+    if (!eventsGallery) return;
 
-        // Preenche os campos laterais como Leitura (Disabled)
-        document.getElementById('eventTitleInput').value = card.getAttribute('data-title');
-        document.getElementById('eventDescInput').value = card.getAttribute('data-desc');
-        document.getElementById('eventPartInput').value = card.getAttribute('data-part');
-        document.getElementById('eventWinInput').value = card.getAttribute('data-win');
+    try {
+        // Puxa os eventos do banco, ordenando do mais novo pro mais antigo
+        const { data: eventos, error } = await supabaseClient
+            .from('eventos')
+            .select('*')
+            .order('id', { ascending: false }); 
 
-        // Resgata as prints do evento
-        const printsRaw = card.getAttribute('data-prints');
-        arrayPrintsAtuais = printsRaw ? JSON.parse(printsRaw) : [];
-        indexPrintAtual = 0;
+        if (error) throw error;
 
-        renderizarMiniPrints();
-        abrirVisualizador();
-    });
-});
+        // Apaga o evento falso e feio que estava no HTML
+        eventsGallery.innerHTML = ''; 
 
-function abrirVisualizador() {
-    if (arrayPrintsAtuais.length === 0) return;
-    
-    eventsGallery.style.display = 'none';
-    eventFullViewer.style.display = 'flex';
-    visualizadorAberto = true;
-    
-    atualizarImagemVisualizador();
-}
+        if (!eventos || eventos.length === 0) {
+            eventsGallery.innerHTML = '<p style="color:#a0a5c0; padding:20px; text-align:center; width:100%;">Nenhum evento criado.</p>';
+            return;
+        }
 
-function fecharVisualizador() {
-    mainLayout.classList.remove('focus-mode'); // Encolhe a imagem de volta
-    eventFullViewer.style.display = 'none';
-    eventsGallery.style.display = 'grid'; // Retorna para a galeria
-    visualizadorAberto = false;
-}
+        // Cria os cards interativos para cada evento do banco
+        eventos.forEach(evento => {
+            const card = document.createElement('div');
+            card.className = 'event-card';
+            
+            const prints = evento.prints || [];
+            // Usa a primeira imagem do array como capa. Se não tiver, usa uma genérica escura
+            const imagemCapa = prints.length > 0 ? prints[0] : 'https://via.placeholder.com/150/120e29/ffffff?text=Sem+Foto';
 
-function atualizarImagemVisualizador() {
-    if (arrayPrintsAtuais.length > 0) {
-        fullViewerImg.src = arrayPrintsAtuais[indexPrintAtual];
-        printCounter.innerText = `${indexPrintAtual + 1} / ${arrayPrintsAtuais.length}`;
+            card.innerHTML = `
+                <div style="width: 100%; height: 90px; border-radius: 4px; overflow: hidden; margin-bottom: 5px;">
+                    <img src="${imagemCapa}" style="width: 100%; height: 100%; object-fit: cover;">
+                </div>
+                <span style="color: #fff; font-size: 0.85rem; font-weight: bold; text-align: center; display: block; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">${evento.titulo}</span>
+            `;
+
+            // Quando clicar no card, abre as infos na lateral
+            card.addEventListener('click', () => {
+                idEventoAtual = evento.id; 
+                document.getElementById('eventTitleInput').value = evento.titulo || '';
+                document.getElementById('eventDescInput').value = evento.descricao || '';
+                document.getElementById('eventPartInput').value = evento.participantes || '';
+                document.getElementById('eventWinInput').value = evento.ganhadores || '';
+                
+                arrayPrintsAtuais = [...prints];
+                indexPrintAtual = 0;
+                renderizarMiniPrints();
+                abrirVisualizador();
+            });
+
+            eventsGallery.appendChild(card);
+        });
+
+        // Simula um clique no primeiro evento para abrir ele automaticamente na tela
+        const primeiroCard = eventsGallery.querySelector('.event-card');
+        if (primeiroCard) primeiroCard.click();
+
+    } catch (error) {
+        console.error("Erro ao puxar eventos:", error);
     }
 }
 
-// Navegação nas Setas (e.stopPropagation previne que clique na seta expanda a imagem)
-if (btnPrevPrint) {
-    btnPrevPrint.addEventListener('click', (e) => {
-        e.stopPropagation(); 
-        if (arrayPrintsAtuais.length === 0) return;
-        indexPrintAtual = (indexPrintAtual === 0) ? arrayPrintsAtuais.length - 1 : indexPrintAtual - 1;
-        atualizarImagemVisualizador();
-    });
-}
-
-if (btnNextPrint) {
-    btnNextPrint.addEventListener('click', (e) => {
-        e.stopPropagation();
-        if (arrayPrintsAtuais.length === 0) return;
-        indexPrintAtual = (indexPrintAtual === arrayPrintsAtuais.length - 1) ? 0 : indexPrintAtual + 1;
-        atualizarImagemVisualizador();
-    });
-}
+// Quando a página inicializa, chama essa função
+document.addEventListener('DOMContentLoaded', () => {
+    carregarEventosDoSupabase();
+});
 
 // =========================================================
 // 2. EXPANDIR / REDUZIR O CENTRO (CLIQUE NA IMAGEM E BOTÃO X)
@@ -362,7 +364,9 @@ if (btnConfirmEvent) {
 
             // Após salvar, limpa o formulário e atualiza a tela
             alterarModoEdicao(false, false);
-            window.location.reload(); 
+            // Após salvar, limpa o formulário e atualiza a galeria SEM mudar de aba
+            alterarModoEdicao(false, false);
+            carregarEventosDoSupabase(); // Trocou o reload por isso!
 
         } catch (err) {
             console.error("Erro no Supabase:", err);
