@@ -135,11 +135,24 @@ function abrirVisualizador() {
     eventFullViewer.style.display = 'flex';
     visualizadorAberto = true;
     
+    // NOVO: Adiciona a classe que joga as tabelas pras bordas
+    const container = document.querySelector('.dashboard-container');
+    if(container) container.classList.add('layout-expandido');
+    
     atualizarImagemVisualizador();
 }
 
 function fecharVisualizador() {
-    mainLayout.classList.remove('focus-mode'); 
+    // Tira o modo tela cheia caso o cara feche pelo X enquanto dava zoom
+    eventFullViewer.classList.remove('img-fullscreen');
+    
+    // Remove a classe que jogava as tabelas pras bordas
+    const container = document.querySelector('.dashboard-container');
+    if(container) container.classList.remove('layout-expandido');
+
+    // Remove aquele 'focus-mode' antigo que você tinha
+    if(mainLayout) mainLayout.classList.remove('focus-mode'); 
+
     eventFullViewer.style.display = 'none';
     eventsGallery.style.display = 'grid'; 
     visualizadorAberto = false;
@@ -231,8 +244,10 @@ document.addEventListener('DOMContentLoaded', () => {
 
 if (fullViewerImg) {
     fullViewerImg.addEventListener('click', () => {
-        // Alterna a classe que muda o Grid Template no CSS
-        mainLayout.classList.toggle('focus-mode');
+        // Ao invés do método antigo, agora ele ativa o modo Tela Cheia do CSS novo
+        if (eventFullViewer) {
+            eventFullViewer.classList.toggle('img-fullscreen');
+        }
     });
 }
 
