@@ -1116,3 +1116,49 @@ body.dashboard-body {
     font-weight: 600;
     z-index: 20;
 }
+/* =========================================
+   ANIMAÇÕES E ZOOM DO PAINEL DE EVENTOS
+========================================= */
+
+/* 1. Faz o painel inteiro deslizar para as bordas suavemente */
+.dashboard-container {
+    transition: max-width 0.4s cubic-bezier(0.25, 1, 0.5, 1), width 0.4s cubic-bezier(0.25, 1, 0.5, 1);
+}
+
+.dashboard-container.layout-expandido {
+    max-width: 98vw !important; /* Puxa quase colando nas bordas da tela */
+    width: 100% !important;
+}
+
+/* 2. Cursor de Lupa para a imagem */
+#fullViewerImg {
+    cursor: zoom-in;
+    transition: all 0.3s ease;
+}
+
+/* 3. Modo Tela Cheia (Estilo Galeria de Celular) */
+#eventFullViewer {
+    transition: all 0.3s ease;
+}
+
+#eventFullViewer.img-fullscreen {
+    position: fixed !important;
+    top: 0 !important;
+    left: 0 !important;
+    width: 100vw !important;
+    height: 100vh !important;
+    background: rgba(10, 7, 26, 0.95) !important; /* Fundo bem escuro */
+    z-index: 99999 !important;
+    border-radius: 0 !important;
+    padding: 0 !important;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+#eventFullViewer.img-fullscreen #fullViewerImg {
+    object-fit: contain !important;
+    max-height: 90vh !important;
+    max-width: 90vw !important;
+    cursor: zoom-out !important; /* Muda o mouse para indicar que clicar tira o zoom */
+}
