@@ -148,6 +148,33 @@ async function carregarEventosDoSupabase() {
             eventsGallery.innerHTML = '<p style="color:#a0a5c0; padding:20px; text-align:center; width:100%;">Nenhum evento criado.</p>';
             return;
         }
+        // =========================================================
+// FUNÇÕES DO VISUALIZADOR DE IMAGENS
+// =========================================================
+
+function abrirVisualizador() {
+    if (arrayPrintsAtuais.length === 0) return;
+    
+    eventsGallery.style.display = 'none';
+    eventFullViewer.style.display = 'flex';
+    visualizadorAberto = true;
+    
+    atualizarImagemVisualizador();
+}
+
+function fecharVisualizador() {
+    mainLayout.classList.remove('focus-mode'); 
+    eventFullViewer.style.display = 'none';
+    eventsGallery.style.display = 'grid'; 
+    visualizadorAberto = false;
+}
+
+function atualizarImagemVisualizador() {
+    if (arrayPrintsAtuais.length > 0) {
+        fullViewerImg.src = arrayPrintsAtuais[indexPrintAtual];
+        printCounter.innerText = `${indexPrintAtual + 1} / ${arrayPrintsAtuais.length}`;
+    }
+}
 
         // Cria os cards interativos para cada evento do banco
         eventos.forEach(evento => {
