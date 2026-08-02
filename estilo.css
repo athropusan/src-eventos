@@ -952,3 +952,167 @@ body.dashboard-body {
     padding: 5px 0;
     line-height: 1.3;
 }
+/* ==========================================================================
+   ATUALIZAÇÕES DA ABA DE EVENTOS (EXPANSÃO, MINIATURAS E PAINEL ADMIN)
+   ========================================================================== */
+
+/* 1. Transição Suave do Grid Principal */
+.sketch-layout {
+    /* Certifique-se de que a sua classe atual .sketch-layout tenha esta transição */
+    transition: grid-template-columns 0.4s ease-in-out;
+}
+
+/* Classe ativada via JavaScript quando o usuário clica na imagem */
+.sketch-layout.focus-mode {
+    /* Reduz as laterais (ex: 180px na esquerda e 240px na direita) e dá o resto pro meio */
+    grid-template-columns: 180px 1fr 240px !important; 
+}
+
+/* 2. Botões do Painel Admin (Criar Novo / Editar) */
+.admin-event-actions {
+    display: flex;
+    align-items: center;
+}
+
+.btn-action-sm {
+    background-color: #1a153b;
+    color: #a0a5c0;
+    border: 1px solid #322853;
+    border-radius: 4px;
+    padding: 4px 8px;
+    font-size: 0.75rem;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.btn-action-sm:hover {
+    background-color: #ff4757; /* Cor de destaque ao passar o mouse */
+    color: #fff;
+    border-color: #ff4757;
+}
+
+/* 3. Estilo para o Botão "X" nas Mini-Prints */
+.mini-print-wrapper {
+    position: relative;
+    display: inline-block;
+    margin-right: 8px;
+    margin-bottom: 8px;
+}
+
+.btn-remove-print {
+    position: absolute;
+    top: -6px;
+    right: -6px;
+    background-color: #ff4757;
+    color: #ffffff;
+    border: none;
+    border-radius: 50%;
+    width: 20px;
+    height: 20px;
+    font-size: 12px;
+    font-weight: bold;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.6);
+    z-index: 10;
+    transition: transform 0.2s ease;
+}
+
+.btn-remove-print:hover {
+    transform: scale(1.15); /* Efeito de crescer ao passar o mouse */
+}
+
+/* 4. Visualizador Central e Imagem Expandida */
+.viewer-img-wrapper {
+    position: relative;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.15); /* Fundo leve para destacar a imagem */
+    border-radius: 8px;
+    padding: 10px;
+    box-sizing: border-box;
+}
+
+#fullViewerImg {
+    max-width: 100%;
+    max-height: 75vh; /* Garante que a imagem cabe na tela (vertical) */
+    object-fit: contain; /* Enquadra perfeitamente sem perder a proporção/qualidade */
+    border-radius: 8px;
+    box-shadow: 0 0 20px rgba(0, 0, 0, 0.8);
+    transition: all 0.4s ease-in-out;
+    cursor: zoom-in; /* Cursor indicando que pode clicar */
+}
+
+.sketch-layout.focus-mode #fullViewerImg {
+    cursor: zoom-out; /* Cursor muda quando já está expandido */
+}
+
+/* 5. Controles Internos da Imagem (Botão X, Setas e Contador) */
+.btn-close-viewer-inner {
+    position: absolute;
+    top: 20px;
+    right: 20px;
+    background: rgba(255, 71, 87, 0.8);
+    color: #fff;
+    border: none;
+    border-radius: 50%;
+    width: 30px;
+    height: 30px;
+    font-size: 14px;
+    font-weight: bold;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 20;
+    transition: background 0.2s;
+}
+
+.btn-close-viewer-inner:hover {
+    background: #ff4757;
+}
+
+.nav-arrow {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    background: rgba(0, 0, 0, 0.7);
+    color: #fff;
+    border: 1px solid rgba(255,255,255,0.2);
+    border-radius: 50%;
+    width: 40px;
+    height: 40px;
+    font-size: 20px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 20;
+    transition: all 0.2s ease;
+}
+
+.nav-arrow:hover {
+    background: #ff4757;
+    border-color: #ff4757;
+}
+
+.arrow-left { left: 20px; }
+.arrow-right { right: 20px; }
+
+.print-counter {
+    position: absolute;
+    bottom: 20px;
+    right: 30px;
+    background: rgba(0, 0, 0, 0.8);
+    color: #fff;
+    padding: 6px 12px;
+    border-radius: 12px;
+    font-size: 0.8rem;
+    font-weight: 600;
+    z-index: 20;
+}
