@@ -34,47 +34,48 @@
         <main class="sketch-layout">
             
             <!-- Coluna Esquerda: Navegação e Membros -->
-<aside class="left-sidebar">
-    <div class="nav-section">
-        <button class="nav-btn" data-target="view-eventos">EVENTOS</button>
-        <button class="nav-btn active" data-target="view-registros">REGÍSTROS</button>
-        <button class="nav-btn" data-target="view-funcoes">FUNÇÕES</button>
-        <button class="nav-btn" data-target="admin-view" id="navAdminBtn" style="display: none;">
-            ⚙️ Painel Admin
-        </button>
-    </div>
+            <aside class="left-sidebar">
+                <div class="nav-section">
+                    <button class="nav-btn" data-target="view-eventos">EVENTOS</button>
+                    <button class="nav-btn active" data-target="view-registros">REGÍSTROS</button>
+                    <button class="nav-btn" data-target="view-funcoes">FUNÇÕES</button>
+                    <button class="nav-btn" data-target="admin-view" id="navAdminBtn" style="display: none;">
+                        ⚙️ Painel Admin
+                    </button>
+                </div>
 
-    <div class="members-section">
-        <span class="members-main-title">LISTA DE MEMBROS</span>
+                <div class="members-section">
+                    <span class="members-main-title">LISTA DE MEMBROS</span>
 
-        <div class="role-group">
-            <span class="role-title">LÍDER</span>
-            <div class="member-tags-row" id="sidebar-Lider"></div>
-        </div>
+                    <div class="role-group">
+                        <span class="role-title">LÍDER</span>
+                        <div class="member-tags-row" id="sidebar-Lider"></div>
+                    </div>
 
-        <div class="role-group">
-            <span class="role-title">VICE-LÍDERES</span>
-            <div class="member-tags-row" id="sidebar-Vice-Lider"></div>
-        </div>
+                    <div class="role-group">
+                        <span class="role-title">VICE-LÍDERES</span>
+                        <div class="member-tags-row" id="sidebar-Vice-Lider"></div>
+                    </div>
 
-        <div class="role-group">
-            <span class="role-title">SECRETÁRIO</span>
-            <div class="member-tags-row" id="sidebar-Secretario"></div>
-        </div>
+                    <div class="role-group">
+                        <span class="role-title">SECRETÁRIO</span>
+                        <div class="member-tags-row" id="sidebar-Secretario"></div>
+                    </div>
 
-        <div class="role-group">
-            <span class="role-title">ANALISTAS</span>
-            <div class="member-tags-row" id="sidebar-Analista"></div>
-        </div>
-    </div>
-</aside>
+                    <div class="role-group">
+                        <span class="role-title">ANALISTAS</span>
+                        <div class="member-tags-row" id="sidebar-Analista"></div>
+                    </div>
+                </div>
+            </aside>
 
-            <!-- ABA 1: EVENTOS -->
+            <!-- ========================================== -->
+            <!-- ABA 1: EVENTOS (ATUALIZADA)                -->
+            <!-- ========================================== -->
             <div class="tab-view" id="view-eventos">
                 <section class="center-content">
                     <div class="center-header">
                         <span class="panel-title">PAINEL DE EVENTOS</span>
-                        <button class="btn-close-viewer" id="btnCloseViewer" style="display: none;" title="Fechar e voltar à galeria">✕</button>
                     </div>
 
                     <div class="events-gallery" id="eventsGallery">
@@ -86,56 +87,67 @@
                         </div>
                     </div>
 
+                    <!-- Visualizador centralizado com botões internos -->
                     <div class="event-full-viewer" id="eventFullViewer" style="display: none;">
-                        <button class="nav-arrow arrow-left" id="btnPrevPrint">‹</button>
                         <div class="viewer-img-wrapper">
+                            <button class="btn-close-viewer-inner" id="btnCloseViewer" title="Fechar">✕</button>
+                            <button class="nav-arrow arrow-left" id="btnPrevPrint">‹</button>
                             <img id="fullViewerImg" src="" alt="Print do Evento">
+                            <button class="nav-arrow arrow-right" id="btnNextPrint">›</button>
                             <span class="print-counter" id="printCounter">1 / 1</span>
                         </div>
-                        <button class="nav-arrow arrow-right" id="btnNextPrint">›</button>
                     </div>
                 </section>
 
+                <!-- Nova lateral direita solicitada -->
                 <aside class="right-sidebar">
-                    <div class="form-header">
-                        <span class="panel-title" id="eventFormTitle">CRIAR EVENTO</span>
+                    <div class="form-header" style="display: flex; justify-content: space-between; align-items: center;">
+                        <span class="panel-title" id="eventFormTitle">DESCRIÇÃO DO EVENTO</span>
+                        
+                        <!-- Botões visíveis SOMENTE para Admin -->
+                        <div class="admin-event-actions" id="adminEventBtns" style="display: none; gap: 5px;">
+                            <button class="btn-action-sm" id="btnAdminNewEvent">+ Novo</button>
+                            <button class="btn-action-sm" id="btnAdminEditEvent">✏️ Editar</button>
+                        </div>
                     </div>
 
                     <div class="event-form-container">
                         <div class="form-group">
                             <label class="form-label">TÍTULO DO EVENTO</label>
-                            <input type="text" id="eventTitleInput" class="form-input" placeholder="Digite o título...">
+                            <input type="text" id="eventTitleInput" class="form-input" placeholder="Título..." disabled>
                         </div>
 
                         <div class="form-group">
                             <label class="form-label">DESCRIÇÃO DO EVENTO</label>
-                            <textarea id="eventDescInput" class="form-textarea" placeholder="Breve resumo..."></textarea>
+                            <textarea id="eventDescInput" class="form-textarea" placeholder="Descrição..." disabled></textarea>
                         </div>
 
                         <div class="form-group">
                             <label class="form-label">PARTICIPANTES</label>
-                            <textarea id="eventPartInput" class="form-textarea mini-text" placeholder="Nicks..."></textarea>
+                            <textarea id="eventPartInput" class="form-textarea mini-text" placeholder="Participantes..." disabled></textarea>
                         </div>
 
                         <div class="form-group">
                             <label class="form-label">GANHADORES</label>
-                            <textarea id="eventWinInput" class="form-textarea mini-text" placeholder="Colocados..."></textarea>
+                            <textarea id="eventWinInput" class="form-textarea mini-text" placeholder="Ganhadores..." disabled></textarea>
                         </div>
 
                         <div class="form-group">
                             <label class="form-label">MINI-PRINTS DO EVENTO</label>
                             <div class="prints-row" id="printsRow">
-                                <button type="button" class="btn-add-print" id="btnAddPrint">+</button>
+                                <button type="button" class="btn-add-print" id="btnAddPrint" style="display: none;">+</button>
                             </div>
                         </div>
 
-                        <div class="event-actions-row">
+                        <!-- Botões de salvar/cancelar que só aparecem durante a edição pelo Admin -->
+                        <div class="event-actions-row" id="eventSubmitRow" style="display: none;">
                             <button class="btn-confirm-event" id="btnConfirmEvent">Confirmar</button>
                             <button class="btn-cancel-event" id="btnCancelEvent">Cancelar</button>
                         </div>
                     </div>
                 </aside>
             </div>
+            <!-- ========================================== -->
 
             <!-- ABA 2: REGISTROS -->
             <div class="tab-view active" id="view-registros">
@@ -158,7 +170,7 @@
                      </div>
 
                     <div class="quick-inputs">
-                        <span class="section-subtitle">ACESSO CONSTRUTOR SRC</span>
+                        <span class="section-subtitle">ACESSO AO CONSTRUTOR SRC</span>
                         <div class="input-mini">
                             <label>LOGIN</label>
                             <input type="text" id="inputLogin" value="****" readonly>
@@ -257,40 +269,40 @@
                         </div>
                     </div>
                     <!-- Seção de Gerenciamento do Admin (Registros, Credenciais e Motivos) -->
-<div style="margin-top: 30px; background: #15102a; padding: 20px; border-radius: 8px; border: 1px solid #322853;">
-    <h3 style="color: #fff; font-size: 1rem; margin-bottom: 15px;">⚙️ Gerenciamento do Painel e Registros</h3>
-    
-    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
-        <!-- Limpar Registros -->
-        <div style="background: #1a153b; padding: 15px; border-radius: 6px; border: 1px solid #322853;">
-            <h4 style="color: #fff; font-size: 0.9rem; margin-bottom: 8px;">Limpar Registros de Ponto</h4>
-            <p style="color: #a0a5c0; font-size: 0.8rem; margin-bottom: 10px;">Apaga todo o histórico de pontos e tarefas armazenados.</p>
-            <button onclick="limparTodosRegistrosAdmin()" style="background: #ff4757; color: #fff; border: none; padding: 8px 12px; border-radius: 4px; cursor: pointer; font-size: 0.85rem; font-weight: 600;">🗑️ Limpar Todos os Registros</button>
-        </div>
+                    <div style="margin-top: 30px; background: #15102a; padding: 20px; border-radius: 8px; border: 1px solid #322853;">
+                        <h3 style="color: #fff; font-size: 1rem; margin-bottom: 15px;">⚙️ Gerenciamento do Painel e Registros</h3>
+                        
+                        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
+                            <!-- Limpar Registros -->
+                            <div style="background: #1a153b; padding: 15px; border-radius: 6px; border: 1px solid #322853;">
+                                <h4 style="color: #fff; font-size: 0.9rem; margin-bottom: 8px;">Limpar Registros de Ponto</h4>
+                                <p style="color: #a0a5c0; font-size: 0.8rem; margin-bottom: 10px;">Apaga todo o histórico de pontos e tarefas armazenados.</p>
+                                <button onclick="limparTodosRegistrosAdmin()" style="background: #ff4757; color: #fff; border: none; padding: 8px 12px; border-radius: 4px; cursor: pointer; font-size: 0.85rem; font-weight: 600;">🗑️ Limpar Todos os Registros</button>
+                            </div>
 
-        <!-- Alterar Credenciais da Conta Construtor -->
-        <div style="background: #1a153b; padding: 15px; border-radius: 6px; border: 1px solid #322853;">
-            <h4 style="color: #fff; font-size: 0.9rem; margin-bottom: 8px;">Credenciais do Construtor SRC</h4>
-            <div style="display: flex; flex-direction: column; gap: 8px; margin-bottom: 10px;">
-                <input type="text" id="adminLoginConta" placeholder="Login / E-mail do jogo..." style="background: #120e29; border: 1px solid #322853; color: #fff; padding: 6px; border-radius: 4px; font-size: 0.8rem;">
-                <input type="text" id="adminSenhaConta" placeholder="Senha do jogo..." style="background: #120e29; border: 1px solid #322853; color: #fff; padding: 6px; border-radius: 4px; font-size: 0.8rem;">
-            </div>
-            <button onclick="salvarCredenciaisConta()" style="background: #2ed573; color: #fff; border: none; padding: 6px 12px; border-radius: 4px; cursor: pointer; font-size: 0.85rem; font-weight: 600;">Salvar Credenciais</button>
-        </div>
-    </div>
+                            <!-- Alterar Credenciais da Conta Construtor -->
+                            <div style="background: #1a153b; padding: 15px; border-radius: 6px; border: 1px solid #322853;">
+                                <h4 style="color: #fff; font-size: 0.9rem; margin-bottom: 8px;">Credenciais do Construtor SRC</h4>
+                                <div style="display: flex; flex-direction: column; gap: 8px; margin-bottom: 10px;">
+                                    <input type="text" id="adminLoginConta" placeholder="Login / E-mail do jogo..." style="background: #120e29; border: 1px solid #322853; color: #fff; padding: 6px; border-radius: 4px; font-size: 0.8rem;">
+                                    <input type="text" id="adminSenhaConta" placeholder="Senha do jogo..." style="background: #120e29; border: 1px solid #322853; color: #fff; padding: 6px; border-radius: 4px; font-size: 0.8rem;">
+                                </div>
+                                <button onclick="salvarCredenciaisConta()" style="background: #2ed573; color: #fff; border: none; padding: 6px 12px; border-radius: 4px; cursor: pointer; font-size: 0.85rem; font-weight: 600;">Salvar Credenciais</button>
+                            </div>
+                        </div>
 
-    <!-- Gerenciar Motivos -->
-    <div style="margin-top: 20px; background: #1a153b; padding: 15px; border-radius: 6px; border: 1px solid #322853;">
-        <h4 style="color: #fff; font-size: 0.9rem; margin-bottom: 8px;">Gerenciar Motivos de Ponto</h4>
-        <div style="display: flex; gap: 10px; margin-bottom: 12px;">
-            <input type="text" id="novoMotivoInput" placeholder="Nome do novo motivo..." style="flex: 1; background: #120e29; border: 1px solid #322853; color: #fff; padding: 8px; border-radius: 4px; font-size: 0.85rem;">
-            <button onclick="adicionarMotivoAdmin()" style="background: #3498db; color: #fff; border: none; padding: 8px 15px; border-radius: 4px; cursor: pointer; font-size: 0.85rem; font-weight: 600;">Adicionar Motivo</button>
-        </div>
-        <div id="listaMotivosAdminContainer" style="display: flex; flex-direction: column; gap: 6px; max-height: 150px; overflow-y: auto;">
-            <!-- Carregado via JS -->
-        </div>
-    </div>
-</div>
+                        <!-- Gerenciar Motivos -->
+                        <div style="margin-top: 20px; background: #1a153b; padding: 15px; border-radius: 6px; border: 1px solid #322853;">
+                            <h4 style="color: #fff; font-size: 0.9rem; margin-bottom: 8px;">Gerenciar Motivos de Ponto</h4>
+                            <div style="display: flex; gap: 10px; margin-bottom: 12px;">
+                                <input type="text" id="novoMotivoInput" placeholder="Nome do novo motivo..." style="flex: 1; background: #120e29; border: 1px solid #322853; color: #fff; padding: 8px; border-radius: 4px; font-size: 0.85rem;">
+                                <button onclick="adicionarMotivoAdmin()" style="background: #3498db; color: #fff; border: none; padding: 8px 15px; border-radius: 4px; cursor: pointer; font-size: 0.85rem; font-weight: 600;">Adicionar Motivo</button>
+                            </div>
+                            <div id="listaMotivosAdminContainer" style="display: flex; flex-direction: column; gap: 6px; max-height: 150px; overflow-y: auto;">
+                                <!-- Carregado via JS -->
+                            </div>
+                        </div>
+                    </div>
 
                     <!-- Seção de Gerenciamento de Funções no Painel Admin -->
                     <div style="margin-top: 35px; border-top: 1px solid #322853; padding-top: 20px;">
@@ -375,11 +387,14 @@
                 }
 
                 // ==========================================================
-                // 🔒 SOMENTE O ADMIN VÊ E ACESSA O PAINEL DE TI
+                // 🔒 SOMENTE O ADMIN VÊ E ACESSA O PAINEL DE TI E BOTÕES DE EVENTO
                 // ==========================================================
                 const navAdminBtn = document.getElementById('navAdminBtn');
+                const adminEventBtns = document.getElementById('adminEventBtns'); // NOVO: Botões do evento
+
                 if (profile.cargo === 'Admin') {
                     if (navAdminBtn) navAdminBtn.style.display = 'block';
+                    if (adminEventBtns) adminEventBtns.style.display = 'flex'; // Mostra os botões de Novo e Editar
                     
                     if (typeof carregarMembrosAdmin === 'function') {
                         carregarMembrosAdmin();
@@ -389,6 +404,7 @@
                     }
                 } else {
                     if (navAdminBtn) navAdminBtn.style.display = 'none';
+                    if (adminEventBtns) adminEventBtns.style.display = 'none';
                 }
 
             } catch (err) {
