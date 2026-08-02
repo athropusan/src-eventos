@@ -103,6 +103,7 @@ document.addEventListener('DOMContentLoaded', () => {
 let arrayPrintsAtuais = [];
 let indexPrintAtual = 0;
 let visualizadorAberto = false;
+let idEventoAtual = null;
 
 // Referências do DOM
 const mainLayout = document.querySelector('.sketch-layout');
@@ -131,6 +132,9 @@ const eventSubmitRow = document.getElementById('eventSubmitRow');
 // (Adapte essa parte de acordo com a sua função que puxa do Supabase)
 document.querySelectorAll('.event-card').forEach(card => {
     card.addEventListener('click', (e) => {
+        // PEGANDO O ID DO BANCO (Importante que o card no HTML tenha data-id="")
+        idEventoAtual = card.getAttribute('data-id'); 
+
         // Preenche os campos laterais como Leitura (Disabled)
         document.getElementById('eventTitleInput').value = card.getAttribute('data-title');
         document.getElementById('eventDescInput').value = card.getAttribute('data-desc');
@@ -265,12 +269,13 @@ function renderizarMiniPrints() {
 }
 
 // =========================================================
-// 4. LÓGICA DE EDIÇÃO DO ADMIN (HABILITAR/DESABILITAR CAMPOS)
+// 4. LÓGICA DE EDIÇÃO DO ADMIN (HABILITAR/DESABILITAR CAMPOS) E SALVAR NO SUPABASE
 // =========================================================
 
 const btnAdminEditEvent = document.getElementById('btnAdminEditEvent');
 const btnAdminNewEvent = document.getElementById('btnAdminNewEvent');
 const btnCancelEvent = document.getElementById('btnCancelEvent');
+const btnConfirmEvent = document.getElementById('btnConfirmEvent'); // Pegando o botão Confirmar
 
 function alterarModoEdicao(limpar, ativado) {
     inputsEvento.forEach(input => {
@@ -280,13 +285,13 @@ function alterarModoEdicao(limpar, ativado) {
     
     if (limpar) {
         arrayPrintsAtuais = [];
+        idEventoAtual = null; // Reseta o ID porque é um Novo Evento
         fecharVisualizador();
     }
 
     btnAddPrint.style.display = ativado ? 'inline-block' : 'none';
     eventSubmitRow.style.display = ativado ? 'flex' : 'none';
     
-    // Atualiza as prints para mostrar ou esconder o botão "X"
     renderizarMiniPrints();
 }
 
@@ -301,6 +306,72 @@ if (btnAdminNewEvent) {
 if (btnCancelEvent) {
     btnCancelEvent.addEventListener('click', () => {
         alterarModoEdicao(false, false); // Cancela a edição e volta pro modo leitura
+    });
+}
+
+// 🚀 AQUI É ONDE A MÁGICA DO SUPABASE ACONTECE NO BOTÃO CONFIRMAR
+if (btnConfirmEvent) {
+    btnConfirmEvent.addEventListener('click', async (e) => {
+        e.preventDefault();
+
+        // Pega os textos das caixas de input
+        const titulo = inputsEvento[0].value.trim();
+        const descricao = inputsEvento[1].value.trim();
+        const participantes = inputsEvento[2].value.trim();
+        const ganhadores = inputsEvento[3].value.trim();
+
+        // Proteção: não deixar salvar sem título
+        if (!titulo) {
+            alert("⚠️ Por favor, preencha o título do evento!");
+            return;
+        }
+
+        // Deixa o botão carregando para não clicarem duas vezes
+        const textoOriginalBotao = btnConfirmEvent.innerText;
+        btnConfirmEvent.innerText = "Salvando...";
+        btnConfirmEvent.disabled = true;
+
+        // Monta o pacote de dados para enviar ao banco
+        const pacoteDeDados = {
+            titulo: titulo,
+            descricao: descricao,
+            participantes: participantes,
+            ganhadores: ganhadores,
+            prints: arrayPrintsAtuais // Envia o array de imagens como JSON
+        };
+
+        try {
+            if (idEventoAtual) {
+                // SE TEM ID: Atualiza um evento que já existe (Botão Editar)
+                const { error } = await supabaseClient
+                    .from('eventos')
+                    .update(pacoteDeDados)
+                    .eq('id', idEventoAtual);
+
+                if (error) throw error;
+                alert("✅ Evento editado com sucesso!");
+            } else {
+                // SE NÃO TEM ID: Cria um evento novinho do zero (Botão Novo)
+                const { error } = await supabaseClient
+                    .from('eventos')
+                    .insert([pacoteDeDados]);
+
+                if (error) throw error;
+                alert("✅ Novo evento criado com sucesso!");
+            }
+
+            // Após salvar, limpa o formulário e atualiza a tela
+            alterarModoEdicao(false, false);
+            window.location.reload(); 
+
+        } catch (err) {
+            console.error("Erro no Supabase:", err);
+            alert("❌ Erro ao salvar no banco: " + err.message);
+        } finally {
+            // Volta o botão ao normal
+            btnConfirmEvent.innerText = textoOriginalBotao;
+            btnConfirmEvent.disabled = false;
+        }
     });
 }
 
