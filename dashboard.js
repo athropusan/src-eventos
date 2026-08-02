@@ -95,272 +95,265 @@ document.addEventListener('DOMContentLoaded', () => {
         btnLogout.addEventListener('click', () => dispararAcao('LOGOUT'));
     }
 
-    // Gerenciamento de eventos da galeria
-    const eventsGallery = document.getElementById('eventsGallery');
-    const eventFullViewer = document.getElementById('eventFullViewer');
-    const fullViewerImg = document.getElementById('fullViewerImg');
-    const printCounter = document.getElementById('printCounter');
-    const btnCloseViewer = document.getElementById('btnCloseViewer');
-    const centerGalleryTitle = document.getElementById('centerGalleryTitle');
-    const btnPrevPrint = document.getElementById('btnPrevPrint');
-    const btnNextPrint = document.getElementById('btnNextPrint');
+// ==========================================================================
+// LÓGICA DA ABA DE EVENTOS (VISUALIZAÇÃO, ADMIN E MINI-PRINTS)
+// ==========================================================================
 
-    const eventFormTitle = document.getElementById('eventFormTitle');
-    const eventTitleInput = document.getElementById('eventTitleInput');
-    const eventDescInput = document.getElementById('eventDescInput');
-    const eventPartInput = document.getElementById('eventPartInput');
-    const eventWinInput = document.getElementById('eventWinInput');
-    const printsRow = document.getElementById('printsRow');
-    const btnAddPrint = document.getElementById('btnAddPrint');
-    const btnConfirmEvent = document.getElementById('btnConfirmEvent');
-    const btnCancelEvent = document.getElementById('btnCancelEvent');
+// Variáveis de controle
+let arrayPrintsAtuais = [];
+let indexPrintAtual = 0;
+let visualizadorAberto = false;
 
-    const imageModal = document.getElementById('imageModal');
-    const modalImageUrl = document.getElementById('modalImageUrl');
-    const btnModalOk = document.getElementById('btnModalOk');
-    const btnModalCancel = document.getElementById('btnModalCancel');
+// Referências do DOM
+const mainLayout = document.querySelector('.sketch-layout');
+const fullViewerImg = document.getElementById('fullViewerImg');
+const btnCloseViewer = document.getElementById('btnCloseViewer');
+const btnPrevPrint = document.getElementById('btnPrevPrint');
+const btnNextPrint = document.getElementById('btnNextPrint');
+const printCounter = document.getElementById('printCounter');
+const eventFullViewer = document.getElementById('eventFullViewer');
+const eventsGallery = document.getElementById('eventsGallery');
 
-    let currentPrints = [];
-    let activeViewerPrints = [];
-    let currentViewerIndex = 0;
-    let selectedEventCard = null;
+const inputsEvento = [
+    document.getElementById('eventTitleInput'),
+    document.getElementById('eventDescInput'),
+    document.getElementById('eventPartInput'),
+    document.getElementById('eventWinInput')
+];
+const btnAddPrint = document.getElementById('btnAddPrint');
+const eventSubmitRow = document.getElementById('eventSubmitRow');
 
-    if (btnAddPrint) {
-        btnAddPrint.addEventListener('click', () => {
-            if (imageModal) {
-                modalImageUrl.value = '';
-                imageModal.classList.add('active');
-            }
-        });
-    }
+// =========================================================
+// 1. ABRIR E NAVEGAR NO EVENTO
+// =========================================================
 
-    if (btnModalCancel) {
-        btnModalCancel.addEventListener('click', () => imageModal.classList.remove('active'));
-    }
+// Função que simula o carregamento dos dados ao clicar no card de um evento
+// (Adapte essa parte de acordo com a sua função que puxa do Supabase)
+document.querySelectorAll('.event-card').forEach(card => {
+    card.addEventListener('click', (e) => {
+        // Preenche os campos laterais como Leitura (Disabled)
+        document.getElementById('eventTitleInput').value = card.getAttribute('data-title');
+        document.getElementById('eventDescInput').value = card.getAttribute('data-desc');
+        document.getElementById('eventPartInput').value = card.getAttribute('data-part');
+        document.getElementById('eventWinInput').value = card.getAttribute('data-win');
 
-    if (btnModalOk) {
-        btnModalOk.addEventListener('click', () => {
-            const url = modalImageUrl.value.trim();
-            if (url) {
-                currentPrints.push(url);
-                renderMiniPrints();
-            }
-            imageModal.classList.remove('active');
-        });
-    }
+        // Resgata as prints do evento
+        const printsRaw = card.getAttribute('data-prints');
+        arrayPrintsAtuais = printsRaw ? JSON.parse(printsRaw) : [];
+        indexPrintAtual = 0;
 
-function renderMiniPrints() {
-        if (!printsRow) return;
-        
-        // Remove rigorosamente todas as miniaturas existentes antes de recriar
-        const imagensAntigas = printsRow.querySelectorAll('.mini-print-img');
-        imagensAntigas.forEach(img => img.remove());
-
-        // Reconstrói as miniaturas com base exata no array atualizado
-        currentPrints.forEach((url, index) => {
-    const img = document.createElement('img');
-    img.className = 'mini-print-img';
-    img.title = 'Clique para remover este print';
-    
-    img.onerror = () => {
-        img.src = 'brasao.png';
-    };
-    
-    // Passa a URL pelo proxy
-    img.src = formatarUrlImagem(url);
-    
-    img.addEventListener('click', () => {
-        if (confirm('🗑️ Deseja remover este print da lista?')) {
-            currentPrints.splice(index, 1);
-            renderMiniPrints();
-        }
+        renderizarMiniPrints();
+        abrirVisualizador();
     });
-    
-    printsRow.insertBefore(img, btnAddPrint);
 });
 
- function atualizarFotoViewer() {
-    if (!fullViewerImg || !printCounter) return;
-    if (activeViewerPrints.length === 0) {
-        fullViewerImg.src = 'brasao.png';
-        printCounter.innerText = '0 / 0';
-        return;
-    }
-
-    // Passa a URL atual pelo proxy
-    fullViewerImg.src = formatarUrlImagem(activeViewerPrints[currentViewerIndex]);
-    fullViewerImg.onerror = () => fullViewerImg.src = 'brasao.png';
-    printCounter.innerText = `${currentViewerIndex + 1} / ${activeViewerPrints.length}`;
+function abrirVisualizador() {
+    if (arrayPrintsAtuais.length === 0) return;
+    
+    eventsGallery.style.display = 'none';
+    eventFullViewer.style.display = 'flex';
+    visualizadorAberto = true;
+    
+    atualizarImagemVisualizador();
 }
-    if (btnPrevPrint) {
-        btnPrevPrint.addEventListener('click', (e) => {
-            e.stopPropagation();
-            if (activeViewerPrints.length > 0) {
-                currentViewerIndex = (currentViewerIndex - 1 + activeViewerPrints.length) % activeViewerPrints.length;
-                atualizarFotoViewer();
-            }
-        });
+
+function fecharVisualizador() {
+    mainLayout.classList.remove('focus-mode'); // Encolhe a imagem de volta
+    eventFullViewer.style.display = 'none';
+    eventsGallery.style.display = 'grid'; // Retorna para a galeria
+    visualizadorAberto = false;
+}
+
+function atualizarImagemVisualizador() {
+    if (arrayPrintsAtuais.length > 0) {
+        fullViewerImg.src = arrayPrintsAtuais[indexPrintAtual];
+        printCounter.innerText = `${indexPrintAtual + 1} / ${arrayPrintsAtuais.length}`;
     }
+}
 
-    if (btnNextPrint) {
-        btnNextPrint.addEventListener('click', (e) => {
-            e.stopPropagation();
-            if (activeViewerPrints.length > 0) {
-                currentViewerIndex = (currentViewerIndex + 1) % activeViewerPrints.length;
-                atualizarFotoViewer();
-            }
-        });
-    }
+// Navegação nas Setas (e.stopPropagation previne que clique na seta expanda a imagem)
+if (btnPrevPrint) {
+    btnPrevPrint.addEventListener('click', (e) => {
+        e.stopPropagation(); 
+        if (arrayPrintsAtuais.length === 0) return;
+        indexPrintAtual = (indexPrintAtual === 0) ? arrayPrintsAtuais.length - 1 : indexPrintAtual - 1;
+        atualizarImagemVisualizador();
+    });
+}
 
-    function abrirEventoDestaque(card) {
-        selectedEventCard = card;
-        document.querySelectorAll('.event-card').forEach(c => c.classList.remove('active-card'));
-        card.classList.add('active-card');
+if (btnNextPrint) {
+    btnNextPrint.addEventListener('click', (e) => {
+        e.stopPropagation();
+        if (arrayPrintsAtuais.length === 0) return;
+        indexPrintAtual = (indexPrintAtual === arrayPrintsAtuais.length - 1) ? 0 : indexPrintAtual + 1;
+        atualizarImagemVisualizador();
+    });
+}
 
-        if (eventsGallery) eventsGallery.style.display = 'none';
-        if (eventFullViewer) eventFullViewer.style.display = 'flex';
-        if (btnCloseViewer) btnCloseViewer.style.display = 'flex';
-        if (centerGalleryTitle) centerGalleryTitle.innerText = `DESTINADO A: ${card.dataset.title || 'EVENTO'}`;
+// =========================================================
+// 2. EXPANDIR / REDUZIR O CENTRO (CLIQUE NA IMAGEM E BOTÃO X)
+// =========================================================
 
-        if (eventFormTitle) eventFormTitle.innerText = 'ALTERAR EVENTO';
-        if (eventTitleInput) eventTitleInput.value = card.dataset.title || '';
-        if (eventDescInput) eventDescInput.value = card.dataset.desc || '';
-        if (eventPartInput) eventPartInput.value = card.dataset.part || '';
-        if (eventWinInput) eventWinInput.value = card.dataset.win || '';
+if (fullViewerImg) {
+    fullViewerImg.addEventListener('click', () => {
+        // Alterna a classe que muda o Grid Template no CSS
+        mainLayout.classList.toggle('focus-mode');
+    });
+}
 
-        try {
-            currentPrints = JSON.parse(card.dataset.prints || '[]');
-        } catch (e) {
-            currentPrints = [];
+if (btnCloseViewer) {
+    btnCloseViewer.addEventListener('click', fecharVisualizador);
+}
+
+// =========================================================
+// 3. GERENCIAR MINI-PRINTS (COM BOTÃO DE REMOVER)
+// =========================================================
+
+function renderizarMiniPrints() {
+    const printsRow = document.getElementById('printsRow');
+    
+    // Remove as antigas antes de recriar para não duplicar
+    document.querySelectorAll('.mini-print-wrapper').forEach(el => el.remove());
+
+    const isEditando = !document.getElementById('eventTitleInput').disabled;
+
+    arrayPrintsAtuais.forEach((url, index) => {
+        const wrapper = document.createElement('div');
+        wrapper.className = 'mini-print-wrapper';
+
+        const img = document.createElement('img');
+        img.src = url;
+        img.style.width = '45px'; 
+        img.style.height = '45px';
+        img.style.objectFit = 'cover';
+        img.style.borderRadius = '4px';
+
+        const removeBtn = document.createElement('button');
+        removeBtn.className = 'btn-remove-print';
+        removeBtn.innerText = '✕';
+        
+        // Se o painel NÃO estiver em modo edição, esconde os botões de remover as fotos
+        if (!isEditando) {
+            removeBtn.style.display = 'none';
         }
 
-        activeViewerPrints = [...currentPrints];
-        currentViewerIndex = 0;
-
-        renderMiniPrints();
-        atualizarFotoViewer();
-    }
-
-    function fecharVisualizadorEDesmarcar() {
-        selectedEventCard = null;
-        document.querySelectorAll('.event-card').forEach(c => c.classList.remove('active-card'));
-
-        if (eventFullViewer) eventFullViewer.style.display = 'none';
-        if (btnCloseViewer) btnCloseViewer.style.display = 'none';
-        if (eventsGallery) eventsGallery.style.display = 'grid';
-        if (centerGalleryTitle) centerGalleryTitle.innerText = 'GALERIA DE EVENTOS REALIZADOS';
-
-        if (eventFormTitle) eventFormTitle.innerText = 'CRIAR EVENTO';
-        if (eventTitleInput) eventTitleInput.value = '';
-        if (eventDescInput) eventDescInput.value = '';
-        if (eventPartInput) eventPartInput.value = '';
-        if (eventWinInput) eventWinInput.value = '';
-        currentPrints = [];
-        activeViewerPrints = [];
-        renderMiniPrints();
-    }
-
-    if (btnCloseViewer) {
-        btnCloseViewer.addEventListener('click', (e) => {
-            e.stopPropagation();
-            fecharVisualizadorEDesmarcar();
-        });
-    }
-
-    if (eventsGallery) {
-        eventsGallery.addEventListener('click', (e) => {
-            if (!e.target.closest('.event-card')) {
-                fecharVisualizadorEDesmarcar();
-            }
-        });
-    }
-
-    if (btnCancelEvent) {
-        btnCancelEvent.addEventListener('click', fecharVisualizadorEDesmarcar);
-    }
-
-    if (btnConfirmEvent) {
-        btnConfirmEvent.addEventListener('click', () => {
-            const titulo = eventTitleInput ? eventTitleInput.value.trim() : '';
-
-            if (!titulo) {
-                alert('⚠️ Por favor, digite o TÍTULO do evento.');
-                return;
-            }
-
- const capaUrl = currentPrints.length > 0 ? currentPrints[0] : 'brasao.png';
-const capaFormatada = formatarUrlImagem(capaUrl);
-
-if (selectedEventCard) {
-    selectedEventCard.querySelector('.event-card-title').innerText = titulo;
-    selectedEventCard.querySelector('img').src = capaFormatada;
+        // Lógica de Remover a Imagem da Array!
+        removeBtn.onclick = function() {
+            arrayPrintsAtuais.splice(index, 1); // Tira da memória
+            renderizarMiniPrints(); // Recria a lista
+            
+            if (visualizadorAberto) {
+                // Ajusta o índice se apagarmos a última foto
+                if (indexPrintAtual >= arrayPrintsAtuais.length) {
+                    indexPrintAtual = Math.max(0, arrayPrintsAtuais.length - 1);
+                }
                 
-                selectedEventCard.dataset.title = titulo;
-                selectedEventCard.dataset.desc = eventDescInput ? eventDescInput.value : '';
-                selectedEventCard.dataset.part = eventPartInput ? eventPartInput.value : '';
-                selectedEventCard.dataset.win = eventWinInput ? eventWinInput.value : '';
-                selectedEventCard.dataset.prints = JSON.stringify(currentPrints);
-
-                alert('✅ Evento alterado com sucesso!');
-           } else {
-    const newCard = document.createElement('div');
-    newCard.className = 'event-card';
-                newCard.dataset.title = titulo;
-                newCard.dataset.desc = eventDescInput ? eventDescInput.value : '';
-                newCard.dataset.part = eventPartInput ? eventPartInput.value : '';
-                newCard.dataset.win = eventWinInput ? eventWinInput.value : '';
-                newCard.dataset.prints = JSON.stringify(currentPrints);
-
-                newCard.innerHTML = `
-        <div class="event-thumb">
-            <img src="${capaFormatada}" alt="Capa Evento" onError="this.src='brasao.png'">
-        </div>
-        <span class="event-card-title">${titulo}</span>
-    `;
-
-                vincularCliqueCard(newCard);
-                if (eventsGallery) eventsGallery.appendChild(newCard);
-                alert('✅ Novo evento criado com sucesso!');
+                if (arrayPrintsAtuais.length > 0) {
+                    atualizarImagemVisualizador();
+                } else {
+                    fecharVisualizador(); // Se apagar todas, fecha o modo central
+                }
             }
+        };
 
-            fecharVisualizadorEDesmarcar();
-        });
+        wrapper.appendChild(img);
+        wrapper.appendChild(removeBtn);
+        
+        // Adiciona a imagem criada ANTES do botão "+"
+        printsRow.insertBefore(wrapper, btnAddPrint);
+    });
+}
+
+// =========================================================
+// 4. LÓGICA DE EDIÇÃO DO ADMIN (HABILITAR/DESABILITAR CAMPOS)
+// =========================================================
+
+const btnAdminEditEvent = document.getElementById('btnAdminEditEvent');
+const btnAdminNewEvent = document.getElementById('btnAdminNewEvent');
+const btnCancelEvent = document.getElementById('btnCancelEvent');
+
+function alterarModoEdicao(limpar, ativado) {
+    inputsEvento.forEach(input => {
+        input.disabled = !ativado;
+        if (limpar) input.value = '';
+    });
+    
+    if (limpar) {
+        arrayPrintsAtuais = [];
+        fecharVisualizador();
     }
 
-    function vincularCliqueCard(card) {
-        card.addEventListener('click', (e) => {
-            e.stopPropagation();
-            abrirEventoDestaque(card);
-        });
-    }
+    btnAddPrint.style.display = ativado ? 'inline-block' : 'none';
+    eventSubmitRow.style.display = ativado ? 'flex' : 'none';
+    
+    // Atualiza as prints para mostrar ou esconder o botão "X"
+    renderizarMiniPrints();
+}
 
-    document.querySelectorAll('.event-card').forEach(vincularCliqueCard);
+if (btnAdminEditEvent) {
+    btnAdminEditEvent.addEventListener('click', () => alterarModoEdicao(false, true)); // Edita o atual
+}
+
+if (btnAdminNewEvent) {
+    btnAdminNewEvent.addEventListener('click', () => alterarModoEdicao(true, true)); // Zera tudo pra criar novo
+}
+
+if (btnCancelEvent) {
+    btnCancelEvent.addEventListener('click', () => {
+        alterarModoEdicao(false, false); // Cancela a edição e volta pro modo leitura
+    });
+}
+
+// =========================================================
+// 5. MODAL DE ADICIONAR IMAGEM URL
+// =========================================================
+const imageModal = document.getElementById('imageModal');
+const btnModalOk = document.getElementById('btnModalOk');
+const btnModalCancel = document.getElementById('btnModalCancel');
+const modalImageUrl = document.getElementById('modalImageUrl');
+
+if (btnAddPrint) btnAddPrint.addEventListener('click', () => imageModal.style.display = 'flex');
+
+if (btnModalCancel) {
+    btnModalCancel.addEventListener('click', () => {
+        imageModal.style.display = 'none';
+        modalImageUrl.value = '';
+    });
+}
+
+if (btnModalOk) {
+    btnModalOk.addEventListener('click', () => {
+        const url = modalImageUrl.value.trim();
+        if (url) {
+            arrayPrintsAtuais.push(url);
+            renderizarMiniPrints();
+            
+            // Se for a primeira imagem posta, abre o visualizador automático
+            if (arrayPrintsAtuais.length === 1 && !visualizadorAberto) {
+                indexPrintAtual = 0;
+                abrirVisualizador();
+            } else if (visualizadorAberto) {
+                atualizarImagemVisualizador();
+            }
+        }
+        imageModal.style.display = 'none';
+        modalImageUrl.value = '';
+    });
+}
+
+});
+
+// (OPCIONAL) Seleciona o primeiro evento automaticamente ao carregar a página
+document.addEventListener('DOMContentLoaded', () => {
+    const primeiroEvento = document.querySelector('.event-card');
+    if (primeiroEvento) {
+        primeiroEvento.click();
+    }
 });
 
 // ==========================================================
 // FUNÇÕES GLOBAIS DO DASHBOARD
 // ==========================================================
-// Função que converte links bloqueados (como Imgur) usando um proxy gratuito
-function formatarUrlImagem(url) {
-    if (!url || url === 'brasao.png') return 'brasao.png';
-    
-    // Se o link for do Imgur, roteamos pelo proxy para burlar o 403
-    if (url.includes('imgur.com')) {
-        const urlLimpa = url.replace(/^https?:\/\//, '');
-        return `https://wsrv.nl/?url=${encodeURIComponent(urlLimpa)}&output=jpg`;
-    }
-    
-    return url;
-}
-
-function manterAtivo10s(elemento) {
-    elemento.classList.add('ativo-neon');
-    setTimeout(() => {
-        elemento.classList.remove('ativo-neon');
-    }, 10000);
-}
-
-function abrirTutorial(nomeFuncao) {
 function manterAtivo10s(elemento) {
     elemento.classList.add('ativo-neon');
     setTimeout(() => {
@@ -419,6 +412,7 @@ async function dispararAcao(tipo) {
     const nick = loggedNickElem ? loggedNickElem.innerText : 'Crebes';
     const motivoAtual = motivoSelecionado ? motivoSelecionado.innerText : 'Geral';
 
+    // Ajustado para usar nick_habbo para bater com a tabela profiles
     const { error } = await supabaseClient
         .from('ponto_logs')
         .insert([
@@ -773,6 +767,7 @@ async function carregarLogsDoSupabase() {
 
     if (logs && logs.length > 0) {
         logs.forEach(log => {
+            // Suporta tanto nick_habbo quanto nick para compatibilidade total
             const nickUsado = log.nick_habbo || log.nick || log.usuario || 'Desconhecido';
             renderizarLinhaLog(log.tipo, nickUsado, log.created_at || log.data_hora, log.motivo);
         });
