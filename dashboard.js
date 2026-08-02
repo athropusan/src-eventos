@@ -125,30 +125,6 @@ const btnAddPrint = document.getElementById('btnAddPrint');
 const eventSubmitRow = document.getElementById('eventSubmitRow');
 
 // =========================================================
-// 1. ABRIR E NAVEGAR NO EVENTO (CARREGANDO DO SUPABASE)
-// =========================================================
-
-async function carregarEventosDoSupabase() {
-    const eventsGallery = document.getElementById('eventsGallery');
-    if (!eventsGallery) return;
-
-    try {
-        // Puxa os eventos do banco, ordenando do mais novo pro mais antigo
-        const { data: eventos, error } = await supabaseClient
-            .from('eventos')
-            .select('*')
-            .order('id', { ascending: false }); 
-
-        if (error) throw error;
-
-        // Apaga o evento falso e feio que estava no HTML
-        eventsGallery.innerHTML = ''; 
-
-        if (!eventos || eventos.length === 0) {
-            eventsGallery.innerHTML = '<p style="color:#a0a5c0; padding:20px; text-align:center; width:100%;">Nenhum evento criado.</p>';
-            return;
-        }
-        // =========================================================
 // FUNÇÕES DO VISUALIZADOR DE IMAGENS
 // =========================================================
 
@@ -175,6 +151,32 @@ function atualizarImagemVisualizador() {
         printCounter.innerText = `${indexPrintAtual + 1} / ${arrayPrintsAtuais.length}`;
     }
 }
+
+// =========================================================
+// 1. ABRIR E NAVEGAR NO EVENTO (CARREGANDO DO SUPABASE)
+// =========================================================
+
+async function carregarEventosDoSupabase() {
+    const eventsGallery = document.getElementById('eventsGallery');
+    if (!eventsGallery) return;
+
+    try {
+        // Puxa os eventos do banco, ordenando do mais novo pro mais antigo
+        const { data: eventos, error } = await supabaseClient
+            .from('eventos')
+            .select('*')
+            .order('id', { ascending: false }); 
+
+        if (error) throw error;
+
+        // Apaga o evento falso e feio que estava no HTML
+        eventsGallery.innerHTML = ''; 
+
+        if (!eventos || eventos.length === 0) {
+            eventsGallery.innerHTML = '<p style="color:#a0a5c0; padding:20px; text-align:center; width:100%;">Nenhum evento criado.</p>';
+            return;
+        }
+    
 
         // Cria os cards interativos para cada evento do banco
         eventos.forEach(evento => {
