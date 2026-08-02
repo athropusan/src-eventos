@@ -182,14 +182,13 @@ async function carregarEventosDoSupabase() {
 
         if (error) throw error;
 
-        // Apaga o evento falso e feio que estava no HTML
+        // Apaga o conteúdo estático que estava no HTML
         eventsGallery.innerHTML = ''; 
 
         if (!eventos || eventos.length === 0) {
             eventsGallery.innerHTML = '<p style="color:#a0a5c0; padding:20px; text-align:center; width:100%;">Nenhum evento criado.</p>';
             return;
         }
-    
 
         // Cria os cards interativos para cada evento do banco
         eventos.forEach(evento => {
@@ -197,7 +196,6 @@ async function carregarEventosDoSupabase() {
             card.className = 'event-card';
             
             const prints = evento.prints || [];
-            // Usa a primeira imagem do array como capa. Se não tiver, usa uma genérica escura
             const imagemCapa = prints.length > 0 ? prints[0] : 'https://via.placeholder.com/150/120e29/ffffff?text=Sem+Foto';
 
             card.innerHTML = `
@@ -232,12 +230,6 @@ async function carregarEventosDoSupabase() {
         console.error("Erro ao puxar eventos:", error);
     }
 }
-
-// Quando a página inicializa, chama essa função
-document.addEventListener('DOMContentLoaded', () => {
-    carregarEventosDoSupabase();
-});
-
 // =========================================================
 // 2. EXPANDIR / REDUZIR O CENTRO (CLIQUE NA IMAGEM E BOTÃO X)
 // =========================================================
@@ -460,14 +452,6 @@ if (btnModalOk) {
     });
 }
 
-});
-
-// (OPCIONAL) Seleciona o primeiro evento automaticamente ao carregar a página
-document.addEventListener('DOMContentLoaded', () => {
-    const primeiroEvento = document.querySelector('.event-card');
-    if (primeiroEvento) {
-        primeiroEvento.click();
-    }
 });
 
 // ==========================================================
